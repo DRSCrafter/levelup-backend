@@ -2,12 +2,28 @@ const Joi = require('joi');
 const mongoose = require('mongoose');
 
 const orderSchema = new mongoose.Schema({
+    productID: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true
+    },
     name: {
         type: String,
         required: true,
         minLength: 3,
         maxLength: 50
     },
+    dateBought: {
+        type: String,
+        required: true
+    },
+    quantity: {
+        type: Number,
+        required: true
+    },
+    totalPrice: {
+        type: Number,
+        required: true
+    }
 })
 
 const Order = mongoose.model('Order', orderSchema);
@@ -24,5 +40,6 @@ function validateOrder(order) {
     return schema.validate(order);
 }
 
+module.exports.orderSchema = orderSchema;
 module.exports.Order = Order;
 module.exports.validateOrder = validateOrder;
