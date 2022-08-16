@@ -1,6 +1,8 @@
 const Joi = require('joi');
 const mongoose = require('mongoose');
 
+const {companySchema} = require('../models/company');
+
 const productSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -9,7 +11,7 @@ const productSchema = new mongoose.Schema({
         maxLength: 50
     },
     company: {
-        type: String,
+        type: companySchema,
         required: true
     },
     type: {
