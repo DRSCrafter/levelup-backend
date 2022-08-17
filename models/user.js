@@ -22,6 +22,10 @@ const userSchema = new mongoose.Schema({
         minLength: 8,
         maxLength: 255
     },
+    userImage:{
+        type: String,
+        required: true
+    },
     account: {
         type: Number,
         required: true,

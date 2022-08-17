@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const multer = require("multer");
 const product = require('./routes/products');
+const user = require('./routes/users');
 
 const app = express();
 
@@ -14,6 +15,7 @@ app.use(express.json());
 app.use('/uploads', express.static('uploads'));
 app.use(cors({exposedHeaders: 'x-auth-token'}));
 app.use('/api/products', product);
+app.use('/api/users', user);
 
 const port = process.env.PORT || 3001;
 app.listen(port, () => console.log(`Listening on Port ${port}...`));
