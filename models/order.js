@@ -14,7 +14,8 @@ const orderSchema = new mongoose.Schema({
     },
     dateBought: {
         type: String,
-        required: true
+        required: true,
+        default: Date.now()
     },
     quantity: {
         type: Number,
@@ -30,9 +31,8 @@ const Order = mongoose.model('Order', orderSchema);
 
 function validateOrder(order) {
     const schema = Joi.object({
-        id: Joi.string().required(),
+        productID: Joi.string().required(),
         name: Joi.string().min(3).max(50).required(),
-        dateBrought: Joi.date().required(),
         quantity: Joi.number().required(),
         totalPrice: Joi.number().required(),
     })

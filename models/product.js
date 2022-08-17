@@ -18,11 +18,7 @@ const productSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    thumbnailImage: {
-        type: String,
-        required: true
-    },
-    fullImage: {
+    productImage: {
         type: String,
         required: true
     },
@@ -33,11 +29,16 @@ const productSchema = new mongoose.Schema({
     description: {
         type: String,
         required: true,
-        maxLength: 1024
+        maxLength: 2048
     },
     stock: {
         type: Number,
         required: true
+    },
+    likes: {
+        type: Number,
+        required: true,
+        default: 0
     }
 })
 
@@ -46,10 +47,10 @@ const Product = mongoose.model('Product', productSchema);
 function validateProduct(product) {
     const schema = Joi.object({
         name: Joi.string().min(3).max(50).required(),
-        company: Joi.string().required(),
+        company: {name: Joi.string().required()},
         type: Joi.string().required(),
         price: Joi.string().required(),
-        description: Joi.string().max(1024).required(),
+        description: Joi.string().max(2048).required(),
         stock: Joi.required()
     })
 
