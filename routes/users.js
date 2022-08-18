@@ -1,4 +1,5 @@
 const express = require('express');
+const {ObjectId} = require('mongodb');
 const multer = require('multer');
 const {Product} = require('../models/product');
 const {User, validateUser} = require('../models/user');
@@ -74,6 +75,19 @@ router.put('/:id/shoppingCart', async (req, res) => {
     res.send("success");
 });
 
+router.put('/:id', async (req, res) => {
+    const user = await User.findByIdAndUpdate(req.params.id, {
+        name: req.body.name,
+        email: req.body.email,
+        password: req.body.password,
+    }, {new : true});
+
+    if (!user)
+        return res.status(400).send("user not found!");
+
+    res.send(user);
+});
+
 router.put('/:id/account', async (req, res) => {
     const user = await User.findById(req.params.id);
     if (!user)
@@ -111,6 +125,35 @@ router.post('/:id/order', async (req, res) => {
 
     product.stock = product.stock - req.body.quantity;
     await product.save();
+})
+
+router.get('/:id', async (req, res) => {
+    const user = await User.findById(req.params.id).select('-password');
+    if (!user)
+        return res.status(404).send('User not found!');
+
+    res.send(user);
+})
+
+router.delete('/:id', async (req, res) => {
+    const user = await User.findByIdAndRemove(req.params.id);
+    if (!user)
+        return res.status(404).send('User not found!');
+
+    res.send(user);
+})
+
+router.delete('/:id', async (req, res) => {
+    const user = await User.findById(req.params.id);
+    if (!user)
+        return res.status(404).send('User not found!');
+
+    const productID = new ObjectId(req.body.productID);
+
+    const index = user.shoppingCart.findIndex(product => productID.equals(productID._id));
+    user.shoppingCart.splice(index, 1);
+
+    res.send("success!");
 })
 
 module.exports = router;

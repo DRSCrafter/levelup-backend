@@ -80,4 +80,20 @@ router.put('/:id/like', async (req, res) => {
     res.send("success");
 })
 
+router.get('/:id', async (req, res) => {
+    const product = await Product.findById(req.params.id);
+    if (!product)
+        return res.status(404).send('product not found!');
+
+    res.send(product);
+});
+
+router.get('/:name', async (req, res) => {
+    const products = Product.find({name: new RegExp(`/.*${req.params.name}.*/`)});
+    if (!products)
+        return res.status(404).send("didn't find anything!");
+
+    res.send(products);
+});
+
 module.exports = router;
