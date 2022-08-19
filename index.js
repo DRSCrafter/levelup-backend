@@ -7,7 +7,7 @@ const user = require('./routes/users');
 
 const app = express();
 
-mongoose.connect('mongodb://localhost/levelup')
+mongoose.connect('mongodb://localhost/levelup', {ignoreUndefined: true})
     .then(() => console.log('Connected to MongoDB...'))
     .catch(() => console.log('Connection failed!'));
 

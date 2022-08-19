@@ -80,20 +80,31 @@ router.put('/:id/like', async (req, res) => {
     res.send("success");
 })
 
+router.get('/search/', async (req, res) => {
+    const products = await Product.find({name: {$regex: new RegExp(req.body.name), $options: 'i'} });
+    if (!products)
+        return res.status(404).send("didn't find anything!");
+
+    res.send(products);
+});
+
+router.get('/filter/', async (req, res) => {
+    const products = await Product.find({
+        name: {$regex: new RegExp(req.body.name), $options: 'i'},
+        'company.name': req.body.companies.length !== 0 ? {$in: req.body.companies} : {$regex: /.*./},
+        price: {$lte: req.body.price},
+        stock: req.body.isAvailable ? {$gte: 1} : {$gte: 0}
+    });
+
+    res.send(products);
+});
+
 router.get('/:id', async (req, res) => {
     const product = await Product.findById(req.params.id);
     if (!product)
         return res.status(404).send('product not found!');
 
     res.send(product);
-});
-
-router.get('/:name', async (req, res) => {
-    const products = Product.find({name: new RegExp(`/.*${req.params.name}.*/`)});
-    if (!products)
-        return res.status(404).send("didn't find anything!");
-
-    res.send(products);
 });
 
 module.exports = router;
