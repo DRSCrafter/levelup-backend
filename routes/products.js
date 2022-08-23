@@ -16,7 +16,7 @@ const storage = multer.diskStorage({
 })
 
 const fileFilter = (req, file, callback) => {
-    if (file.mimetype === 'image/png' || file.mimetype === 'image/jpg' || file.mimetype === 'image/jpeg')
+    if (file.mimetype === 'image/png' || file.mimetype === 'image/jpg' || file.mimetype === 'image/jpeg' || file.mimetype === 'image/webp')
         callback(null, true);
     else
         callback(null, false);
@@ -30,21 +30,25 @@ const upload = multer({
     fileFilter: fileFilter
 });
 
-router.post('/', upload.single('productImage'), async (req, res) => {
+router.post('/', upload.array('images'), async (req, res) => {
     const {error} = validateProduct(req.body);
-    if (error)
-        return res.status(400).send('Invalid credentials');
+    // if (error)
+    //     return res.status(400).send('Invalid credentials');
 
-    if (!req.file)
+    if (!req.files)
         return res.status(422).send('No image provided');
+
+    const paths = req.files.map(file => file.path);
 
     const product = new Product({
         name: req.body.name,
         company: req.body.company,
         type: req.body.type,
-        productImage: req.file.path,
+        productImage: paths[0],
+        thumbnailImage: paths[1],
         price: req.body.price,
         description: req.body.description,
+        details: req.body.details,
         stock: req.body.stock
     })
 

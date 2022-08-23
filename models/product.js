@@ -2,6 +2,7 @@ const Joi = require('joi');
 const mongoose = require('mongoose');
 
 const {companySchema} = require('../models/company');
+const {any} = require("joi");
 
 const productSchema = new mongoose.Schema({
     name: {
@@ -22,6 +23,10 @@ const productSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    thumbnailImage: {
+        type: String,
+        required: true
+    },
     price: {
         type: Number,
         required: true
@@ -30,6 +35,9 @@ const productSchema = new mongoose.Schema({
         type: String,
         required: true,
         maxLength: 2048
+    },
+    details: {
+        strict: false
     },
     stock: {
         type: Number,
@@ -40,7 +48,7 @@ const productSchema = new mongoose.Schema({
         required: true,
         default: 0
     }
-})
+}, {strict: false})
 
 const Product = mongoose.model('Product', productSchema);
 
