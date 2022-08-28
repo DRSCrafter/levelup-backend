@@ -4,8 +4,14 @@ const cors = require('cors');
 const multer = require("multer");
 const product = require('./routes/products');
 const user = require('./routes/users');
+const config = require('config');
 
 const app = express();
+
+if (!config.get('jwtPrivateKey')){
+    console.error('Private Key not defined!')
+    process.exit(1);
+}
 
 mongoose.connect('mongodb://localhost/levelup', {ignoreUndefined: true})
     .then(() => console.log('Connected to MongoDB...'))

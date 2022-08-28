@@ -1,6 +1,9 @@
 const express = require("express");
 const { ObjectId } = require("mongodb");
 const multer = require("multer");
+const config = require("config");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const { Product } = require("../models/product");
 const { User, validateUser } = require("../models/user");
 const { Order } = require("../models/order");
@@ -48,8 +51,12 @@ router.post("/", upload.single("userImage"), async (req, res) => {
     userImage: req.file.path,
   });
 
+  const salt = await bcrypt.genSalt(10);
+  user.password = await bcrypt.hash(user.password, salt);
   await user.save();
-  res.send(user);
+
+  const token = jwt.sign({ _id: user._id }, config.get("jwtPrivateKey"));
+  res.header("x-auth-token", token).send(user);
 });
 
 router.put("/:id/shoppingCart", async (req, res) => {
@@ -74,6 +81,17 @@ router.put("/:id/shoppingCart", async (req, res) => {
   await user.save();
 
   res.send("success");
+});
+
+router.put("/login", async (req, res) => {
+  const user = await User.findOne({ email: req.body.email });
+  if (!user) return res.status(404).send("user not found!");
+
+  const vaildPassword = await bcrypt.compare(req.body.password, user.password);
+  if (!vaildPassword) return res.status(401).send("Wrong password!");
+
+  const token = jwt.sign({ _id: user._id }, config.get("jwtPrivateKey"));
+  res.header("x-auth-token", token).send(user);
 });
 
 router.put("/:id", async (req, res) => {
@@ -112,19 +130,47 @@ router.post("/:id/order", async (req, res) => {
   if (product.stock < req.body.quantity)
     return res.status(400).send("not enough in stock!");
 
-  const order = new Order({
-    productID: product._id,
-    name: product.name,
-    quantity: req.body.quantity,
-    totalPrice: req.body.totalPrice,
-  });
+  let order = null;
 
-  user.shoppingCart.push(order);
+  if (!req.body.itemExists) {
+    order = new Order({
+      productID: product._id,
+      name: product.name,
+      quantity: req.body.quantity,
+      totalPrice: req.body.totalPrice,
+    });
+    user.shoppingCart.push(order);
+  } else {
+    const orderIndex = user.shoppingCart.findIndex(
+      (item) => item.productID == req.body.productID
+    );
+    order = user.shoppingCart[orderIndex];
+    order.quantity = order.quantity + req.body.quantity;
+    order.totalPrice = order.totalPrice + req.body.totalPrice;
+    user.shoppingCart[orderIndex] = order;
+  }
+
   await user.save();
 
-  res.send(order);
+  res.send("success");
 
   product.stock = product.stock - req.body.quantity;
+  await product.save();
+});
+
+router.put("/:id/order/delete", async (req, res) => {
+  const user = await User.findById(req.params.id);
+  if (!user) return res.status(400).send("user not found!");
+
+  const product = await Product.findById(req.body.productID);
+  if (!product) return res.status(401).send("product not found!");
+
+  user.shoppingCart = user.shoppingCart.filter(
+    (order) => order.productID != req.body.productID
+  );
+  await user.save();
+
+  product.stock = product.stock + req.body.quantity;
   await product.save();
 });
 

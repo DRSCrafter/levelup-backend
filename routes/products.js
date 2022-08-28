@@ -72,13 +72,21 @@ router.put("/:id/stock", async (req, res) => {
 
 router.put("/:id/like", async (req, res) => {
   const product = await Product.findById(req.params.id);
+  const user = await User.findById(req.body.userID);
 
   if (!product) return res.status(400).send("product not found!");
+  if (!user) return res.status(400).send("user not found!");
 
-  if (req.body.isIncrement) product.likes = product.likes + 1;
-  else product.likes = product.likes - 1;
+  if (req.body.isIncrement) {
+    product.likes = product.likes + 1;
+    user.likes.push(req.params.id);
+  } else {
+    product.likes = product.likes - 1;
+    user.likes = user.likes.filter((id) => id !== req.params.id);
+  }
 
   await product.save();
+  await user.save();
 
   res.send("success");
 });
