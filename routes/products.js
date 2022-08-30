@@ -91,9 +91,24 @@ router.put("/:id/like", async (req, res) => {
   res.send("success");
 });
 
-router.get("/search/", async (req, res) => {
+router.put("/related", async (req, res) => {
+  console.log(req.body);
+  const products1 = await Product.find({
+    type: req.body.type,
+    category: req.body.category,
+  }).limit(8);
+  const products2 = await Product.find({
+    type: req.body.type,
+    category: { $ne: req.body.category },
+  }).limit(8 - products1.length);
+  const products = products1.concat(products2);
+
+  res.send(products);
+});
+
+router.get("/search/:str", async (req, res) => {
   const products = await Product.find({
-    name: { $regex: new RegExp(req.body.name), $options: "i" },
+    name: { $regex: new RegExp(req.params.str), $options: "i" },
   });
   if (!products) return res.status(404).send("didn't find anything!");
 
@@ -107,8 +122,10 @@ router.put("/filter/", async (req, res) => {
       req.body.companies.length !== 0
         ? { $in: req.body.companies }
         : { $regex: /.*./ },
-    stock: req.body.isAvailable ? { $gte: 1 } : { $gte: 0 },
-  }).select("name price thumbnailImage stock");
+    stock: req.body.isAvailable === "1" ? { $gte: 1 } : { $gte: 0 },
+  })
+    .select("name price thumbnailImage stock")
+    .sort(req.body.sort);
 
   res.send(products);
 });

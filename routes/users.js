@@ -61,7 +61,7 @@ router.post("/", upload.single("userImage"), async (req, res) => {
 
 router.put("/:id/shoppingCart", async (req, res) => {
   const user = await User.findById(req.params.id);
-  if (!user) return res.status(400).send("user not found!");
+  if (!user) return res.status(401).send("user not found!");
 
   let totalCost = 0;
 
@@ -70,13 +70,29 @@ router.put("/:id/shoppingCart", async (req, res) => {
   }
 
   if (totalCost > user.account)
-    return res.status(400).send("not enough money!");
+    return res.status(402).send("not enough money!");
 
   for (let item of user.shoppingCart) {
     user.order.push(item);
   }
 
   user.account -= totalCost;
+  user.shoppingCart = [];
+  await user.save();
+
+  res.send("success");
+});
+
+router.delete("/:id/shoppingCart", async (req, res) => {
+  const user = await User.findById(req.params.id);
+  if (!user) return res.status(400).send("user not found!");
+
+  for (let item of user.shoppingCart) {
+    const product = await Product.findById(item.productID);
+    product.stock += item.quantity;
+    await product.save();
+  }
+
   user.shoppingCart = [];
   await user.save();
 
@@ -114,7 +130,7 @@ router.put("/:id/account", async (req, res) => {
   const user = await User.findById(req.params.id);
   if (!user) return res.status(400).send("user not found!");
 
-  user.account += req.body.charge;
+  user.account += req.body.amount;
   await user.save();
 
   res.send("success");
