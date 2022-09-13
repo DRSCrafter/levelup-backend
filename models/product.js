@@ -12,7 +12,11 @@ const productSchema = new mongoose.Schema({
         maxLength: 50
     },
     company: {
-        type: companySchema,
+        type: String,
+        required: true
+    },
+    category: {
+        type: String,
         required: true
     },
     type: {
