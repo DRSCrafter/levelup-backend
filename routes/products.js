@@ -1,8 +1,7 @@
 const express = require("express");
 const multer = require("multer");
-const { Product, validateProduct } = require("../models/product");
+const { Product } = require("../models/product");
 const { User } = require("../models/user");
-const { Order } = require("../models/order");
 const { Company } = require("../models/company");
 
 const router = express.Router();
@@ -36,10 +35,6 @@ const upload = multer({
 });
 
 router.post("/", upload.array("images"), async (req, res) => {
-  // const {error} = validateProduct(req.body);
-  // if (error)
-  //     return res.status(400).send('Invalid credentials');
-
   if (!req.files) return res.status(422).send("No image provided");
 
   const paths = req.files.map((file) => file.path);

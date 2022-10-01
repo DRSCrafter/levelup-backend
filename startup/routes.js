@@ -6,6 +6,8 @@ const user = require("../routes/users");
 const company = require("../routes/companies");
 const banner = require("../routes/banners");
 
+const error = require('../middlewares/error');
+
 module.exports = function(app) {
     app.use(express.json());
     app.use("/uploads", express.static("uploads"));
@@ -14,4 +16,5 @@ module.exports = function(app) {
     app.use("/api/users", user);
     app.use("/api/companies", company);
     app.use("/api/banners", banner);
+    app.use(error);
 }

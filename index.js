@@ -3,11 +3,12 @@ const mongoose = require("mongoose");
 const config = require('config');
 
 const app = express();
+
+require('./startup/logging');
 require('./startup/routes')(app);
 
 if (!config.get("jwtPrivateKey")) {
-  console.error("Private Key not defined!");
-  process.exit(1);
+  throw new Error("FATAL ERROR: Private Key is not defined!");
 }
 
 mongoose
