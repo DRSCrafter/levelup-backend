@@ -67,7 +67,7 @@ router.post("/", upload.array("images"), async (req, res) => {
     company.categories.push(req.body.category);
 
     await company.save();
-  } else console.log("reached!");
+  }
 
   await product.save();
   res.send(product);
@@ -144,7 +144,6 @@ router.put("/filter/", async (req, res) => {
   })
     .select("name price thumbnailImage stock")
     .sort(req.body.sort);
-  console.log(products);
 
   res.send(products);
 });

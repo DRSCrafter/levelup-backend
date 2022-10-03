@@ -42,14 +42,14 @@ router.post("/", upload.single("userImage"), async (req, res) => {
   const { error } = validateUser(req.body);
   if (error) return res.status(400).send("Invalid credentials");
 
-  if (!req.file) return res.status(422).send("No image provided");
-
   const user = new User({
     name: req.body.name,
     email: req.body.email,
     password: req.body.password,
-    userImage: req.file.path,
   });
+
+  if (req.file)
+    user.userImage = req.file.path;
 
   const salt = await bcrypt.genSalt(10);
   user.password = await bcrypt.hash(user.password, salt);

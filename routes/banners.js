@@ -39,12 +39,12 @@ const upload = multer({
 router.post("/", upload.single("bannerImage"), async (req, res) => {
   if (!req.file) return res.status(400).send("No image provided!");
 
-  const product = await Product.find({ _id: req.body.productID });
+  const product = await Product.findById(req.body.productID);
   if (!product) return res.status(400).send("Product not found!");
 
   const banner = new Banner({
     productID: req.body.productID,
-    name: product.name,
+    name: req.body.name,
     bannerImage: req.file.path,
   });
 
