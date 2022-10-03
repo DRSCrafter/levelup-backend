@@ -24,7 +24,6 @@ const userSchema = new mongoose.Schema({
   },
   userImage: {
     type: String,
-    required: true,
   },
   account: {
     type: Number,

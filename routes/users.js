@@ -48,7 +48,7 @@ router.post("/", upload.single("userImage"), async (req, res) => {
     password: req.body.password,
   });
 
-  if (req.file)
+  if (req.file !== undefined)
     user.userImage = req.file.path;
 
   const salt = await bcrypt.genSalt(10);
