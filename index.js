@@ -6,6 +6,7 @@ const app = express();
 
 require('./startup/logging');
 require('./startup/routes')(app);
+require('./startup/prod')(app);
 
 if (!config.get("jwtPrivateKey")) {
   throw new Error("FATAL ERROR: Private Key is not defined!");
