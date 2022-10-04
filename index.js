@@ -12,10 +12,10 @@ if (!config.get("jwtPrivateKey")) {
   throw new Error("FATAL ERROR: Private Key is not defined!");
 }
 
+const db = config.get('db');
 mongoose
-  .connect("mongodb://localhost/levelup", { ignoreUndefined: true })
-  .then(() => console.log("Connected to MongoDB..."))
-  .catch(() => console.log("Connection failed!"));
+  .connect(db, { ignoreUndefined: true })
+  .then(() => console.log(`Connected to ${db}...`));
 
 const port = process.env.PORT || 3001;
 app.listen(port, () => console.log(`Listening on Port ${port}...`));
