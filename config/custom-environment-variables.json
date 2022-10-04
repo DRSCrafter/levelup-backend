@@ -1,0 +1,4 @@
+{
+  "jwtPrivateKey": "levelup_jwtPrivateKey",
+  "db": "levelup_db"
+}
