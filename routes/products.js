@@ -1,19 +1,13 @@
 const express = require("express");
 const multer = require("multer");
+const cloudinary = require("../utils/cloudinary");
 const { Product } = require("../models/product");
 const { User } = require("../models/user");
 const { Company } = require("../models/company");
 
 const router = express.Router();
 
-const storage = multer.diskStorage({
-  destination: (req, file, callback) => {
-    callback(null, "./uploads/products");
-  },
-  filename: (req, file, callback) => {
-    callback(null, file.originalname);
-  },
-});
+const storage = multer.diskStorage({});
 
 const fileFilter = (req, file, callback) => {
   if (
@@ -37,7 +31,10 @@ const upload = multer({
 router.post("/", upload.array("images"), async (req, res) => {
   if (!req.files) return res.status(422).send("No image provided");
 
-  const paths = req.files.map((file) => file.path);
+  const paths = req.files.map(async (file) => {
+    const result = await cloudinary.uploader.upload(file.path);
+    return result.url;
+  });
 
   const product = new Product({
     name: req.body.name,

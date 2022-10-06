@@ -1,21 +1,12 @@
 const express = require("express");
 const multer = require("multer");
-const { Product, validateProduct } = require("../models/product");
-const { User } = require("../models/user");
-const { Order } = require("../models/order");
-const { Company } = require("../models/company");
+const cloudinary = require("../utils/cloudinary");
+const { Product } = require("../models/product");
 const { Banner } = require("../models/banner");
 
 const router = express.Router();
 
-const storage = multer.diskStorage({
-  destination: (req, file, callback) => {
-    callback(null, "./uploads/banners");
-  },
-  filename: (req, file, callback) => {
-    callback(null, file.originalname);
-  },
-});
+const storage = multer.diskStorage({});
 
 const fileFilter = (req, file, callback) => {
   if (
@@ -42,10 +33,12 @@ router.post("/", upload.single("bannerImage"), async (req, res) => {
   const product = await Product.findById(req.body.productID);
   if (!product) return res.status(400).send("Product not found!");
 
+  const result = await cloudinary.uploader.upload(req.file.path);
+
   const banner = new Banner({
     productID: req.body.productID,
     name: req.body.name,
-    bannerImage: req.file.path,
+    bannerImage: result.url,
   });
 
   await banner.save();

@@ -45,7 +45,6 @@ router.post("/", upload.single("userImage"), async (req, res) => {
   if (req.file !== undefined) {
     const result = await cloudinary.uploader.upload(req.file.path);
     user.userImage = result.url;
-    console.log(result);
   }
 
   const salt = await bcrypt.genSalt(10);
