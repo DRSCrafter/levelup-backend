@@ -1,4 +1,7 @@
 {
   "jwtPrivateKey": "",
-  "db": ""
+  "db": "",
+  "cloudName": "",
+  "cloudApiKey": "",
+  "cloudApiSecret": ""
 }

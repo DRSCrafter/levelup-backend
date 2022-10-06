@@ -1,4 +1,7 @@
 {
   "jwtPrivateKey": "levelup_jwtPrivateKey",
-  "db": "levelup_db"
+  "db": "levelup_db",
+  "cloudName": "levelup_cloudName",
+  "cloudApiKey": "levelup_cloudApiKey",
+  "cloudApiSecret": "levelup_cloudApiSecret"
 }

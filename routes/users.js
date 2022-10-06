@@ -7,17 +7,11 @@ const jwt = require("jsonwebtoken");
 const { Product } = require("../models/product");
 const { User, validateUser } = require("../models/user");
 const { Order } = require("../models/order");
+const cloudinary = require("../utils/cloudinary");
 
 const router = express.Router();
 
-const storage = multer.diskStorage({
-  destination: (req, file, callback) => {
-    callback(null, "./uploads/users");
-  },
-  filename: (req, file, callback) => {
-    callback(null, file.originalname);
-  },
-});
+const storage = multer.diskStorage({});
 
 const fileFilter = (req, file, callback) => {
   if (
@@ -48,8 +42,11 @@ router.post("/", upload.single("userImage"), async (req, res) => {
     password: req.body.password,
   });
 
-  if (req.file !== undefined)
-    user.userImage = req.file.path;
+  if (req.file !== undefined) {
+    const result = await cloudinary.uploader.upload(req.file.path);
+    user.userImage = result.url;
+    console.log(result);
+  }
 
   const salt = await bcrypt.genSalt(10);
   user.password = await bcrypt.hash(user.password, salt);
