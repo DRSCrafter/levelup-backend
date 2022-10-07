@@ -31,18 +31,19 @@ const upload = multer({
 router.post("/", upload.array("images"), async (req, res) => {
   if (!req.files) return res.status(422).send("No image provided");
 
-  const paths = req.files.map(async (file) => {
-    const result = await cloudinary.uploader.upload(file.path);
-    return result.url;
-  });
+  console.log(req.files[0]);
+  const productImgUpload = await cloudinary.uploader.upload(req.files[0].path);
+  const thumbnailImgUpload = await cloudinary.uploader.upload(
+    req.files[1].path
+  );
 
   const product = new Product({
     name: req.body.name,
     company: req.body.company,
     type: req.body.type,
     category: req.body.category,
-    productImage: paths[0],
-    thumbnailImage: paths[1],
+    productImage: productImgUpload.url,
+    thumbnailImage: thumbnailImgUpload.url,
     price: req.body.price,
     description: req.body.description,
     details: req.body.details,
