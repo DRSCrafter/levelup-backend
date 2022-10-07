@@ -73,7 +73,7 @@ router.post("/", upload.array("images"), async (req, res) => {
 router.put("/:id/stock", async (req, res) => {
   const product = await Product.findById(req.params.id);
 
-  if (!product) return res.status(400).send("product not found!");
+  if (!product) return res.status(400).send("کالا یافت نشد!");
 
   product.stock = req.body.stock;
   await product.save();
@@ -85,8 +85,8 @@ router.put("/:id/like", async (req, res) => {
   const product = await Product.findById(req.params.id);
   const user = await User.findById(req.body.userID);
 
-  if (!product) return res.status(400).send("product not found!");
-  if (!user) return res.status(400).send("user not found!");
+  if (!product) return res.status(400).send("کالا یافت نشد!");
+  if (!user) return res.status(400).send("کاربر یافت نشد!");
 
   if (req.body.isIncrement) {
     product.likes = product.likes + 1;
@@ -124,7 +124,7 @@ router.get("/search/:str", async (req, res) => {
   const products = await Product.find({
     name: { $regex: new RegExp(req.params.str), $options: "i" },
   });
-  if (!products) return res.status(404).send("didn't find anything!");
+  if (!products) return res.status(404).send("موردی یافت نشد!");
 
   res.send(products);
 });
@@ -147,7 +147,7 @@ router.put("/filter/", async (req, res) => {
 
 router.get("/:id", async (req, res) => {
   const product = await Product.findById(req.params.id);
-  if (!product) return res.status(404).send("product not found!");
+  if (!product) return res.status(404).send("کالا یافت نشد!");
 
   res.send(product);
 });

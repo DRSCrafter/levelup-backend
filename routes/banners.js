@@ -28,10 +28,10 @@ const upload = multer({
 });
 
 router.post("/", upload.single("bannerImage"), async (req, res) => {
-  if (!req.file) return res.status(400).send("No image provided!");
+  if (!req.file) return res.status(400).send("تصویری ارائه نشده!");
 
   const product = await Product.findById(req.body.productID);
-  if (!product) return res.status(400).send("Product not found!");
+  if (!product) return res.status(400).send("کالا یافت  نشد!");
 
   const result = await cloudinary.uploader.upload(req.file.path);
 

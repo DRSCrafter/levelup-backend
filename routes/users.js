@@ -34,7 +34,7 @@ const upload = multer({
 
 router.post("/", upload.single("userImage"), async (req, res) => {
   const { error } = validateUser(req.body);
-  if (error) return res.status(400).send("Invalid credentials");
+  if (error) return res.status(400).send("اطلاعات وارد شده صحیح نیست!");
 
   const user = new User({
     name: req.body.name,
@@ -57,7 +57,7 @@ router.post("/", upload.single("userImage"), async (req, res) => {
 
 router.put("/:id/shoppingCart", async (req, res) => {
   const user = await User.findById(req.params.id);
-  if (!user) return res.status(401).send("user not found!");
+  if (!user) return res.status(401).send("کاربر یافت نشد!");
 
   let totalCost = 0;
 
@@ -66,7 +66,7 @@ router.put("/:id/shoppingCart", async (req, res) => {
   }
 
   if (totalCost > user.account)
-    return res.status(402).send("not enough money!");
+    return res.status(402).send("اعتبار شما کافی نیست!");
 
   for (let item of user.shoppingCart) {
     user.order.push(item);
@@ -81,7 +81,7 @@ router.put("/:id/shoppingCart", async (req, res) => {
 
 router.delete("/:id/shoppingCart", async (req, res) => {
   const user = await User.findById(req.params.id);
-  if (!user) return res.status(400).send("user not found!");
+  if (!user) return res.status(400).send("کالا یافت نشد!");
 
   for (let item of user.shoppingCart) {
     const product = await Product.findById(item.productID);
@@ -97,10 +97,10 @@ router.delete("/:id/shoppingCart", async (req, res) => {
 
 router.put("/login", async (req, res) => {
   const user = await User.findOne({ email: req.body.email });
-  if (!user) return res.status(404).send("user not found!");
+  if (!user) return res.status(404).send("کاربر یافت نشد!");
 
   const vaildPassword = await bcrypt.compare(req.body.password, user.password);
-  if (!vaildPassword) return res.status(401).send("Wrong password!");
+  if (!vaildPassword) return res.status(401).send("رمز عبور اشتباه است!");
 
   const token = jwt.sign({ _id: user._id }, config.get("jwtPrivateKey"));
   res.header("x-auth-token", token).send(user);
@@ -117,14 +117,14 @@ router.put("/:id", async (req, res) => {
     { new: true }
   );
 
-  if (!user) return res.status(400).send("user not found!");
+  if (!user) return res.status(400).send("کاربر یافت نشد!");
 
   res.send(user);
 });
 
 router.put("/:id/account", async (req, res) => {
   const user = await User.findById(req.params.id);
-  if (!user) return res.status(400).send("user not found!");
+  if (!user) return res.status(400).send("کاربر یافت نشد!");
 
   user.account += req.body.amount;
   await user.save();
@@ -134,13 +134,13 @@ router.put("/:id/account", async (req, res) => {
 
 router.post("/:id/order", async (req, res) => {
   const user = await User.findById(req.params.id);
-  if (!user) return res.status(400).send("user not found!");
+  if (!user) return res.status(400).send("کاربر یافت نشد!");
 
   const product = await Product.findById(req.body.productID);
-  if (!product) return res.status(400).send("product not found!");
+  if (!product) return res.status(400).send("کالا یافت نشد!");
 
   if (product.stock < req.body.quantity)
-    return res.status(400).send("not enough in stock!");
+    return res.status(400).send("موجودی انبار کافی نیست!");
 
   let order = null;
 
@@ -172,10 +172,10 @@ router.post("/:id/order", async (req, res) => {
 
 router.put("/:id/order/delete", async (req, res) => {
   const user = await User.findById(req.params.id);
-  if (!user) return res.status(400).send("user not found!");
+  if (!user) return res.status(400).send("کاربر یافت نشد!");
 
   const product = await Product.findById(req.body.productID);
-  if (!product) return res.status(401).send("product not found!");
+  if (!product) return res.status(401).send("کالا یافت نشد!");
 
   user.shoppingCart = user.shoppingCart.filter(
     (order) => order.productID != req.body.productID
@@ -188,21 +188,21 @@ router.put("/:id/order/delete", async (req, res) => {
 
 router.get("/:id", async (req, res) => {
   const user = await User.findById(req.params.id).select("-password");
-  if (!user) return res.status(404).send("User not found!");
+  if (!user) return res.status(404).send("کاربر یافت نشد!");
 
   res.send(user);
 });
 
 router.delete("/:id", async (req, res) => {
   const user = await User.findByIdAndRemove(req.params.id);
-  if (!user) return res.status(404).send("User not found!");
+  if (!user) return res.status(404).send("کاربر یافت نشد!");
 
   res.send(user);
 });
 
 router.delete("/:id", async (req, res) => {
   const user = await User.findById(req.params.id);
-  if (!user) return res.status(404).send("User not found!");
+  if (!user) return res.status(404).send("کاربر یافت نشد!");
 
   const productID = new ObjectId(req.body.productID);
 
