@@ -5,6 +5,7 @@ const product = require("../routes/products");
 const user = require("../routes/users");
 const company = require("../routes/companies");
 const banner = require("../routes/banners");
+const test = require("../routes/test");
 
 const error = require("../middlewares/error");
 
@@ -16,5 +17,5 @@ module.exports = function (app) {
   app.use("/api/users", user);
   app.use("/api/companies", company);
   app.use("/api/banners", banner);
-  // app.use(error);
+  app.use("/api/test", test);
 };
